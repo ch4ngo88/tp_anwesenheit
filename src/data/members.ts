@@ -1079,7 +1079,7 @@ export const initialMembers: Member[] = [
       },
       {
         date: '2025-05-04',
-        present: false,
+        present: true,
       },
     ],
   },
