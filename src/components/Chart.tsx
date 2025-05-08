@@ -7,30 +7,28 @@ import {
   ResponsiveContainer,
   Cell,
   LabelList,
-} from "recharts";
-import type { Member } from "../types/member";
+} from 'recharts'
+import type { Member } from '../types/member'
 
 interface Props {
-  members: Member[];
+  members: Member[]
 }
 
 export default function Chart({ members }: Props) {
   const allDates = Array.from(
     new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))
-  ).sort();
+  ).sort()
 
   const data = members.map((m) => {
-    const relevantDates = allDates.filter((d) => d >= m.joined);
-    const relevantEntries = m.attendance.filter((a) =>
-      relevantDates.includes(a.date)
-    );
+    const relevantDates = allDates.filter((d) => d >= m.joined)
+    const relevantEntries = m.attendance.filter((a) => relevantDates.includes(a.date))
 
-    const total = relevantDates.length;
-    const present = relevantEntries.filter((a) => a.present).length;
-    const percent = total > 0 ? Math.round((present / total) * 100) : 0;
+    const total = relevantDates.length
+    const present = relevantEntries.filter((a) => a.present).length
+    const percent = total > 0 ? Math.round((present / total) * 100) : 0
 
-    return { name: m.name, percent };
-  });
+    return { name: m.name, percent }
+  })
 
   return (
     <div className="w-full min-h-[350px] sm:h-[450px] bg-white p-4 rounded shadow">
@@ -47,12 +45,7 @@ export default function Chart({ members }: Props) {
             tick={{ fontSize: 12 }}
             tickFormatter={(val) => `${val}%`}
           />
-          <YAxis
-            type="category"
-            dataKey="name"
-            tick={{ fontSize: 12 }}
-            width={100}
-          />
+          <YAxis type="category" dataKey="name" tick={{ fontSize: 12 }} width={100} />
           <Tooltip formatter={(value: number) => `${value}%`} />
           <Bar dataKey="percent">
             {data.map((entry) => (
@@ -60,10 +53,10 @@ export default function Chart({ members }: Props) {
                 key={`cell-${entry.name}`}
                 fill={
                   entry.percent > 75
-                    ? "#16a34a" // Tailwind green-600
+                    ? '#16a34a' // Tailwind green-600
                     : entry.percent < 25
-                    ? "#dc2626" // Tailwind red-600
-                    : "#eab308" // Tailwind yellow-500
+                      ? '#dc2626' // Tailwind red-600
+                      : '#eab308' // Tailwind yellow-500
                 }
               />
             ))}
@@ -72,8 +65,8 @@ export default function Chart({ members }: Props) {
               position="insideRight"
               formatter={(val: number) => `${val}%`}
               style={{
-                fill: "#000",
-                fontWeight: "bold",
+                fill: '#000',
+                fontWeight: 'bold',
                 fontSize: 12,
               }}
             />
@@ -81,5 +74,5 @@ export default function Chart({ members }: Props) {
         </BarChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }

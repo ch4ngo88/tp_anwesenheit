@@ -48,5 +48,4 @@ export const initialMembers: Member[] = [
     ],
   },
   // weitere Mitglieder als Platzhalter
-  
 ]

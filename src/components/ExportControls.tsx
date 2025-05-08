@@ -20,7 +20,7 @@ export default function ExportControls({ members, onImport, editMode }: Props) {
       link.href = url;
       link.download = "members-export.json";
       link.click();
-    } catch (err) {
+    } catch {
       alert("❌ Fehler beim Exportieren als JSON");
     }
   };
@@ -40,7 +40,7 @@ export const initialMembers: Member[] = `;
       link.href = url;
       link.download = "members.ts";
       link.click();
-    } catch (err) {
+    } catch {
       alert("❌ Fehler beim Exportieren als TypeScript");
     }
   };
@@ -61,7 +61,7 @@ export const initialMembers: Member[] = `;
         } else {
           alert("❌ Ungültige Datenstruktur");
         }
-      } catch (err) {
+      } catch {
         alert("❌ Fehler beim Laden der Datei");
       }
     };

@@ -1,89 +1,74 @@
-import { useState } from "react";
-import type { Member, AttendanceEntry } from "../types/member";
+import { useState } from 'react'
+import type { Member } from '../types/member'
 
 interface Props {
-  members: Member[];
-  onUpdate: (updatedMembers: Member[]) => void;
-  editMode: boolean;
+  members: Member[]
+  onUpdate: (updatedMembers: Member[]) => void
+  editMode: boolean
 }
 
-export default function AttendanceTable({
-  members,
-  onUpdate,
-  editMode,
-}: Props) {
-  const [newDate, setNewDate] = useState("");
-  const [newName, setNewName] = useState("");
-  const [newJoined, setNewJoined] = useState("");
+export default function AttendanceTable({ members, onUpdate, editMode }: Props) {
+  const [newDate, setNewDate] = useState('')
+  const [newName, setNewName] = useState('')
+  const [newJoined, setNewJoined] = useState('')
 
   const allDates = Array.from(
     new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))
-  ).sort();
+  ).sort()
 
   const handleToggle = (memberId: string, date: string) => {
     const updated = members.map((m) => {
-      if (m.id !== memberId) return m;
+      if (m.id !== memberId) return m
 
       const updatedAttendance = m.attendance.some((a) => a.date === date)
-        ? m.attendance.map((a) =>
-            a.date === date ? { ...a, present: !a.present } : a
-          )
-        : [...m.attendance, { date, present: true }];
+        ? m.attendance.map((a) => (a.date === date ? { ...a, present: !a.present } : a))
+        : [...m.attendance, { date, present: true }]
 
       return {
         ...m,
-        attendance: updatedAttendance.sort((a, b) =>
-          a.date.localeCompare(b.date)
-        ),
-      };
-    });
+        attendance: updatedAttendance.sort((a, b) => a.date.localeCompare(b.date)),
+      }
+    })
 
-    onUpdate(updated);
-  };
+    onUpdate(updated)
+  }
 
   const addNewDate = () => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return
 
     const updated = members.map((m) => {
-      if (m.attendance.some((a) => a.date === newDate)) return m;
+      if (m.attendance.some((a) => a.date === newDate)) return m
       return {
         ...m,
-        attendance: [
-          ...m.attendance,
-          { date: newDate, present: false },
-        ].sort((a, b) => a.date.localeCompare(b.date)),
-      };
-    });
+        attendance: [...m.attendance, { date: newDate, present: false }].sort((a, b) =>
+          a.date.localeCompare(b.date)
+        ),
+      }
+    })
 
-    onUpdate(updated);
-    setNewDate("");
-  };
+    onUpdate(updated)
+    setNewDate('')
+  }
 
   const addNewMember = () => {
-    if (!newName.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(newJoined)) return;
+    if (!newName.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(newJoined)) return
 
     const newMember: Member = {
-      id: "m_" + Date.now(),
+      id: 'm_' + Date.now(),
       name: newName.trim(),
       joined: newJoined,
       attendance: [],
-    };
+    }
 
-    onUpdate([...members, newMember]);
-    setNewName("");
-    setNewJoined("");
-  };
+    onUpdate([...members, newMember])
+    setNewName('')
+    setNewJoined('')
+  }
 
-  const updateMemberField = (
-    id: string,
-    field: "name" | "joined",
-    value: string
-  ) => {
-    const updated = members.map((m) =>
-      m.id === id ? { ...m, [field]: value } : m
-    );
-    onUpdate(updated);
-  };
+  const updateMemberField = (id: string, field: 'name' | 'joined', value: string) => {
+    const updated = members.map((m) => (m.id === id ? { ...m, [field]: value } : m))
+    onUpdate(updated)
+  }
 
   return (
     <div className="overflow-auto bg-white shadow rounded p-4">
@@ -135,30 +120,25 @@ export default function AttendanceTable({
         <table className="table-auto border-collapse w-full text-sm min-w-[800px]">
           <thead>
             <tr className="bg-gray-200 sticky top-0 z-10">
-              <th className="border p-2 text-left bg-gray-100 sticky left-0 z-20">
-                Mitglied
-              </th>
+              <th className="border p-2 text-left bg-gray-100 sticky left-0 z-20">Mitglied</th>
               {allDates.map((date) => (
-                <th
-                  key={date}
-                  className="border p-2 text-center bg-gray-100 relative"
-                >
+                <th key={date} className="border p-2 text-center bg-gray-100 relative">
                   {editMode ? (
                     <div className="flex flex-col items-center gap-1">
                       <input
                         type="date"
                         value={date}
                         onChange={(e) => {
-                          const newDate = e.target.value;
-                          if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return;
+                          const newDate = e.target.value
+                          if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return
 
                           const updated = members.map((m) => ({
                             ...m,
                             attendance: m.attendance.map((a) =>
                               a.date === date ? { ...a, date: newDate } : a
                             ),
-                          }));
-                          onUpdate(updated);
+                          }))
+                          onUpdate(updated)
                         }}
                         className="text-sm border px-1 py-0.5 rounded"
                       />
@@ -167,11 +147,9 @@ export default function AttendanceTable({
                           if (confirm(`Datum "${date}" wirklich löschen?`)) {
                             const updated = members.map((m) => ({
                               ...m,
-                              attendance: m.attendance.filter(
-                                (a) => a.date !== date
-                              ),
-                            }));
-                            onUpdate(updated);
+                              attendance: m.attendance.filter((a) => a.date !== date),
+                            }))
+                            onUpdate(updated)
                           }
                         }}
                         className="text-red-500 hover:text-red-700 text-lg"
@@ -201,38 +179,20 @@ export default function AttendanceTable({
                           <input
                             type="text"
                             value={member.name}
-                            onChange={(e) =>
-                              updateMemberField(
-                                member.id,
-                                "name",
-                                e.target.value
-                              )
-                            }
+                            onChange={(e) => updateMemberField(member.id, 'name', e.target.value)}
                             className="border rounded px-2 py-1 text-sm"
                           />
                           <input
                             type="date"
                             value={member.joined}
-                            onChange={(e) =>
-                              updateMemberField(
-                                member.id,
-                                "joined",
-                                e.target.value
-                              )
-                            }
+                            onChange={(e) => updateMemberField(member.id, 'joined', e.target.value)}
                             className="border rounded px-2 py-1 text-sm"
                           />
                         </div>
                         <button
                           onClick={() => {
-                            if (
-                              confirm(
-                                `Mitglied "${member.name}" wirklich löschen?`
-                              )
-                            ) {
-                              onUpdate(
-                                members.filter((m) => m.id !== member.id)
-                              );
+                            if (confirm(`Mitglied "${member.name}" wirklich löschen?`)) {
+                              onUpdate(members.filter((m) => m.id !== member.id))
                             }
                           }}
                           className="text-red-500 hover:text-red-700 text-lg mt-1"
@@ -244,9 +204,7 @@ export default function AttendanceTable({
                     ) : (
                       <div>
                         <div className="font-medium">{member.name}</div>
-                        <div className="text-xs text-gray-500">
-                          {member.joined}
-                        </div>
+                        <div className="text-xs text-gray-500">{member.joined}</div>
                       </div>
                     )}
                   </td>
@@ -254,19 +212,14 @@ export default function AttendanceTable({
                   {allDates.map((date) => {
                     if (date < member.joined) {
                       return (
-                        <td
-                          key={date}
-                          className="border p-2 text-center text-gray-300"
-                        >
+                        <td key={date} className="border p-2 text-center text-gray-300">
                           —
                         </td>
-                      );
+                      )
                     }
 
-                    const entry = member.attendance.find(
-                      (a) => a.date === date
-                    );
-                    const isPresent = entry?.present ?? false;
+                    const entry = member.attendance.find((a) => a.date === date)
+                    const isPresent = entry?.present ?? false
 
                     return (
                       <td
@@ -274,19 +227,19 @@ export default function AttendanceTable({
                         className={`border p-2 text-center select-none font-bold ${
                           isPresent
                             ? editMode
-                              ? "text-green-600 cursor-pointer hover:bg-green-100"
-                              : "text-green-600"
+                              ? 'text-green-600 cursor-pointer hover:bg-green-100'
+                              : 'text-green-600'
                             : editMode
-                            ? "text-red-600 cursor-pointer hover:bg-red-100"
-                            : "text-red-600"
+                              ? 'text-red-600 cursor-pointer hover:bg-red-100'
+                              : 'text-red-600'
                         }`}
                         onClick={() => {
-                          if (editMode) handleToggle(member.id, date);
+                          if (editMode) handleToggle(member.id, date)
                         }}
                       >
-                        {isPresent ? "✔" : "✘"}
+                        {isPresent ? '✔' : '✘'}
                       </td>
-                    );
+                    )
                   })}
                 </tr>
               ))}
@@ -294,5 +247,5 @@ export default function AttendanceTable({
         </table>
       </div>
     </div>
-  );
+  )
 }
