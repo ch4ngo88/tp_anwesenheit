@@ -49,9 +49,9 @@ export default function Chart({ members }: Props) {
   });
 
   const getColor = (percent: number) => {
-    if (percent > 75) return "#22c55e"; // Modernes Grün
-    if (percent < 25) return "#ef4444"; // Modernes Rot
-    return "#facc15"; // Modernes Gelb
+    if (percent >= 70) return "#22c55e"; // Grün
+    if (percent <= 30) return "#ef4444"; // Rot
+    return "#facc15"; // Gelb
   };
 
   return (
