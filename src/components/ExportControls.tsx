@@ -101,6 +101,22 @@ export const initialMembers: Member[] = `;
         onChange={handleImport}
         className="hidden"
       />
+      <button
+        onClick={() => {
+          if (
+            confirm("⚠️ Lokale Änderungen wirklich löschen und zurücksetzen?")
+          ) {
+            localStorage.removeItem("members");
+            alert(
+              "✅ Lokale Daten wurden zurückgesetzt.\nInitialdaten aus members.ts werden beim nächsten Laden verwendet."
+            );
+            window.location.reload();
+          }
+        }}
+        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+      >
+        🔄 Zurücksetzen auf Datei (members.ts)
+      </button>
     </div>
   );
 }
