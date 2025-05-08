@@ -1,4 +1,3 @@
-// eslint.config.js
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
@@ -9,12 +8,30 @@ export default [
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['dist/**', 'build/**'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
+      },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        self: 'readonly',
+        fetch: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        Headers: 'readonly',
+        location: 'readonly',
+        URL: 'readonly',
+        importScripts: 'readonly',
+        navigator: 'readonly',
+        module: 'readonly',
       },
     },
     plugins: {
@@ -23,7 +40,7 @@ export default [
     rules: {
       ...react.configs.recommended.rules,
       ...tseslint.configs.recommended[1].rules,
-      'react/react-in-jsx-scope': 'off', // 🧠 das war's
+      'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
     settings: {

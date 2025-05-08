@@ -1,75 +1,72 @@
-import React, { useRef } from "react";
-import type { Member } from "../types/member";
+import React, { useRef } from 'react'
+import type { Member } from '../types/member'
 
 interface Props {
-  members: Member[];
-  onImport: (members: Member[]) => void;
-  editMode: boolean;
+  members: Member[]
+  onImport: (members: Member[]) => void
+  editMode: boolean
 }
 
 export default function ExportControls({ members, onImport, editMode }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const exportJson = () => {
     try {
       const blob = new Blob([JSON.stringify(members, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "members-export.json";
-      link.click();
+        type: 'application/json',
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'members-export.json'
+      link.click()
     } catch {
-      alert("❌ Fehler beim Exportieren als JSON");
+      alert('❌ Fehler beim Exportieren als JSON')
     }
-  };
+  }
 
   const exportTS = () => {
     try {
       const header = `// Auto-generiert von ExportControls.tsx
 import type { Member } from '../types/member'
 
-export const initialMembers: Member[] = `;
-      const content = JSON.stringify(members, null, 2);
-      const full = `${header}${content}\n`;
+export const initialMembers: Member[] = `
+      const content = JSON.stringify(members, null, 2)
+      const full = `${header}${content}\n`
 
-      const blob = new Blob([full], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "members.ts";
-      link.click();
+      const blob = new Blob([full], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'members.ts'
+      link.click()
     } catch {
-      alert("❌ Fehler beim Exportieren als TypeScript");
+      alert('❌ Fehler beim Exportieren als TypeScript')
     }
-  };
+  }
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = () => {
       try {
-        const data = JSON.parse(reader.result as string);
-        if (
-          Array.isArray(data) &&
-          data.every((m) => m.id && m.name && "attendance" in m)
-        ) {
-          onImport(data);
+        const data = JSON.parse(reader.result as string)
+        if (Array.isArray(data) && data.every((m) => m.id && m.name && 'attendance' in m)) {
+          onImport(data)
         } else {
-          alert("❌ Ungültige Datenstruktur");
+          alert('❌ Ungültige Datenstruktur')
         }
       } catch {
-        alert("❌ Fehler beim Laden der Datei");
+        alert('❌ Fehler beim Laden der Datei')
       }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
-  if (!editMode) return null;
+  if (!editMode) return null
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -103,14 +100,12 @@ export const initialMembers: Member[] = `;
       />
       <button
         onClick={() => {
-          if (
-            confirm("⚠️ Lokale Änderungen wirklich löschen und zurücksetzen?")
-          ) {
-            localStorage.removeItem("members");
+          if (confirm('⚠️ Lokale Änderungen wirklich löschen und zurücksetzen?')) {
+            localStorage.removeItem('members')
             alert(
-              "✅ Lokale Daten wurden zurückgesetzt.\nInitialdaten aus members.ts werden beim nächsten Laden verwendet."
-            );
-            window.location.reload();
+              '✅ Lokale Daten wurden zurückgesetzt.\nInitialdaten aus members.ts werden beim nächsten Laden verwendet.'
+            )
+            window.location.reload()
           }
         }}
         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
@@ -118,5 +113,5 @@ export const initialMembers: Member[] = `;
         🔄 Zurücksetzen auf Datei (members.ts)
       </button>
     </div>
-  );
+  )
 }

@@ -8,14 +8,22 @@ interface Props {
 }
 
 export default function AttendanceTable({ members, onUpdate, editMode }: Props) {
+  /* ------------------------------------------------------------------
+     State & Hilfsfunktionen
+  ------------------------------------------------------------------ */
   const [newDate, setNewDate] = useState('')
   const [newName, setNewName] = useState('')
   const [newJoined, setNewJoined] = useState('')
+
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 639px)').matches
 
   const allDates = Array.from(
     new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))
   ).sort()
 
+  /* ------------------------------------------------------------------
+     Helper: Anwesenheit umschalten
+  ------------------------------------------------------------------ */
   const handleToggle = (memberId: string, date: string) => {
     const updated = members.map((m) => {
       if (m.id !== memberId) return m
@@ -33,6 +41,9 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
     onUpdate(updated)
   }
 
+  /* ------------------------------------------------------------------
+     Helper: neue Daten / Mitglieder
+  ------------------------------------------------------------------ */
   const addNewDate = () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return
 
@@ -70,9 +81,49 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
     onUpdate(updated)
   }
 
+  /* ------------------------------------------------------------------
+     MOBILE RENDERING (< 640 px)  ➜ Karten-Layout
+  ------------------------------------------------------------------ */
+  if (isMobile) {
+    return (
+      <ul className="space-y-4">
+        {members
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((member) => (
+            <li key={member.id} className="bg-white rounded-xl p-4 shadow">
+              <header className="font-semibold mb-2">{member.name}</header>
+              <ul className="flex flex-wrap gap-2">
+                {member.attendance.map((a) => (
+                  <li key={a.date} className="flex items-center gap-1">
+                    <button
+                      role="checkbox"
+                      aria-checked={a.present}
+                      tabIndex={0}
+                      onClick={() => handleToggle(member.id, a.date)}
+                      onKeyDown={(e) => {
+                        if (['Enter', ' '].includes(e.key)) handleToggle(member.id, a.date)
+                      }}
+                      className={a.present ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}
+                    >
+                      {a.present ? '✔' : '✘'}
+                    </button>
+                    <span className="text-xs">{a.date}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+      </ul>
+    )
+  }
+
+  /* ------------------------------------------------------------------
+     DESKTOP / TABLET  ➜ klassische Tabelle
+  ------------------------------------------------------------------ */
   return (
-    <div className="overflow-auto bg-white shadow rounded p-4">
-      {/* Mitglieder hinzufügen */}
+    <div className="overflow-x-auto scrollbar-thin lg:overflow-visible bg-white shadow rounded p-4">
+      {/* ------------------- Mitglieder hinzufügen ------------------- */}
       {editMode && (
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2">
           <input
@@ -97,7 +148,7 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
         </div>
       )}
 
-      {/* Neues Datum hinzufügen */}
+      {/* ------------------- Neues Datum ------------------- */}
       {editMode && (
         <div className="mb-4 flex items-center gap-2">
           <input
@@ -115,9 +166,9 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
         </div>
       )}
 
-      {/* Tabelle */}
+      {/* ------------------- Tabelle ------------------- */}
       <div className="overflow-x-auto">
-        <table className="table-auto border-collapse w-full text-sm min-w-[800px]">
+        <table className="min-w-[52rem] w-full border-collapse text-sm">
           <thead>
             <tr className="bg-gray-200 sticky top-0 z-10">
               <th className="border p-2 text-left bg-gray-100 sticky left-0 z-20">Mitglied</th>
@@ -224,6 +275,13 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
                     return (
                       <td
                         key={date}
+                        role="button"
+                        aria-pressed={isPresent}
+                        tabIndex={editMode ? 0 : -1}
+                        onKeyDown={(e) => {
+                          if (editMode && ['Enter', ' '].includes(e.key))
+                            handleToggle(member.id, date)
+                        }}
                         className={`border p-2 text-center select-none font-bold ${
                           isPresent
                             ? editMode

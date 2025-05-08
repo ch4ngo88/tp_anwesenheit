@@ -2,27 +2,40 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- IE/Edge-Kompatibilität -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Viewport für Mobile + Safe-Area -->
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="author" content="Marco & Co." />
+    <meta name="author" content="Marco &amp; Co." />
     <meta
       name="description"
-      content="Digitale Anwesenheitsliste mit Auswertung für Unterricht, Gruppen oder Kurse. Einfach & lokal."
+      content="Digitale Anwesenheitsliste mit Auswertung für Unterricht, Gruppen oder Kurse. Einfach &amp; lokal."
     />
     <meta name="theme-color" content="#22c55e" />
 
-    <link rel="icon" href="/favicon.ico" />
-    <title>Anwesenheitsliste – Übersicht & Auswertung</title>
-
-    <!-- Social Sharing / PWA ready (optional, future-proof) -->
-    <link rel="manifest" href="/manifest.json" />
+    <!-- PWA / Social -->
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta property="og:title" content="Anwesenheitsliste" />
     <meta
       property="og:description"
       content="Einfaches Tool zur Erfassung und Auswertung von Anwesenheit."
     />
     <meta property="og:type" content="website" />
+
+    <!-- iOS / Windows Tiles -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="msapplication-TileColor" content="#22c55e" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png" />
+
+    <link rel="icon" href="/favicon.ico" />
+    <title>Anwesenheitsliste – Übersicht &amp; Auswertung</title>
   </head>
+
   <body class="bg-gray-100 text-gray-800">
     <noscript>
       <strong> Bitte aktiviere JavaScript, um diese Anwendung nutzen zu können. </strong>
