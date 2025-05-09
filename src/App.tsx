@@ -79,6 +79,7 @@ export default function App() {
       {/* Chart */}
       <section className={isCompact ? '' : 'mb-4'}>
         <Chart members={members} compact={isCompact} />
+        
       </section>
 
       {/* Export / Import */}

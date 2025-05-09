@@ -17,6 +17,32 @@ interface Props {
   compact: boolean
 }
 
+/* ----------  Custom Tooltip  ---------- */
+function CustomTooltip({ active, payload }: any) {
+  if (!active || !payload?.length) return null
+  const { name, percent, present, total, presentDates } = payload[0].payload
+  return (
+    <div   tabIndex={0}
+  onWheelCapture={(e) => {
+  e.stopPropagation()
+  e.preventDefault()
+}}
+className="bg-white border border-gray-200 rounded-xl shadow p-2 text-xs max-w-[180px]">
+      <div className="font-medium mb-1">{name}</div>
+      <div className="mb-1">
+        {present} von {total} Terminen ({percent}%)
+      </div>
+      {presentDates.length > 0 && (
+        <ul className="list-disc list-inside max-h-28 overflow-y-auto space-y-0.5">
+          {presentDates.map((d: string) => (
+            <li key={d}>{d}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export default function Chart({ members, compact }: Props) {
   const { height: vpHeight } = useWindowSize()
 
@@ -32,9 +58,16 @@ export default function Chart({ members, compact }: Props) {
         const relevant = allDates.filter((d) => d >= m.joined)
         const entries = m.attendance.filter((a) => relevant.includes(a.date))
         const total = relevant.length
-        const present = entries.filter((e) => e.present).length
+        const presentEntries = entries.filter((e) => e.present)
+        const present = presentEntries.length
         const percent = total ? Math.round((present / total) * 100) : 0
-        return { name: m.name, percent, present, total }
+        return {
+          name: m.name,
+          percent,
+          present,
+          total,
+          presentDates: presentEntries.map((e) => e.date),
+        }
       }),
     [members, allDates]
   )
@@ -42,7 +75,7 @@ export default function Chart({ members, compact }: Props) {
   const data = useMemo(() => rawData.sort((a, b) => b.percent - a.percent), [rawData])
 
   /* ----------  Dynamische Höhenberechnung  ---------- */
-  const headerReserve = compact ? 4 : 56 // kaum Platzabzug im Compact-Modus
+  const headerReserve = compact ? 4 : 56
   const freeHeight = Math.max(vpHeight - headerReserve, 300)
   const barHeight = Math.max(10, Math.floor((freeHeight - 60) / data.length))
   const chartHeight = barHeight * data.length + 60
@@ -57,32 +90,22 @@ export default function Chart({ members, compact }: Props) {
         <BarChart
           layout="vertical"
           data={data}
-          margin={{ top: 0, right: compact ? 8 : 16, bottom: 0, left: compact ? 70 : 90 }}
+          margin={{ top: 1, right: compact ? 8 : 16, bottom: 1, left: 0 }}
           barSize={barHeight - 2}
         >
           <XAxis type="number" domain={[0, 100]} hide />
           <YAxis
             type="category"
             dataKey="name"
-            width={compact ? 70 : 90}
+            width={64}
+              interval={0} // <- das ist der wichtige Teil
+
             tick={{ fontSize: compact ? 8 : 9, fill: '#374151' }}
           />
-          <Tooltip
-            formatter={(v: number, _n, props) => {
-              const it = props.payload as any
-              return [`${v}%`, `${it.present}x anwesend von ${it.total} Terminen`]
-            }}
-            contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-              fontSize: 12,
-              color: '#111827',
-              padding: '6px 10px',
-            }}
-          />
-          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
+<Tooltip
+  content={<CustomTooltip />}
+  wrapperStyle={{ pointerEvents: 'auto' }}   // ← aktiviert Events
+/>          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
             {data.map((d) => (
               <Cell key={d.name} fill={getColor(d.percent)} />
             ))}
