@@ -13,17 +13,13 @@ import { useWindowSize } from '../hooks/useWindowSize'
 import type { Member } from '../types/member'
 import type { TooltipProps } from 'recharts'
 
-
 interface Props {
   members: Member[]
   compact: boolean
 }
 
 /* ----------  Custom Tooltip  ---------- */
-function CustomTooltip({
-  active,
-  payload,
-}: TooltipProps<number, string>) {
+function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
   const { name, percent, present, total, presentDates } = payload[0].payload
   return (
@@ -105,14 +101,14 @@ export default function Chart({ members, compact }: Props) {
             type="category"
             dataKey="name"
             width={64}
-              interval={0} // <- das ist der wichtige Teil
-
+            interval={0} // <- das ist der wichtige Teil
             tick={{ fontSize: compact ? 8 : 9, fill: '#374151' }}
           />
-<Tooltip
-  content={<CustomTooltip />}
-  wrapperStyle={{ pointerEvents: 'auto' }}   // ← aktiviert Events
-/>          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
+          <Tooltip
+            content={<CustomTooltip />}
+            wrapperStyle={{ pointerEvents: 'auto' }} // ← aktiviert Events
+          />{' '}
+          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
             {data.map((d) => (
               <Cell key={d.name} fill={getColor(d.percent)} />
             ))}

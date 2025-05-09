@@ -22,11 +22,6 @@ export function throttleFn<A extends unknown[], R>(
   }
 }
 
-
-
-
-
-
 export default function App() {
   const [members, setMembers] = useState<Member[]>(initialMembers)
   const [editMode, setEditMode] = useState(false)
@@ -36,14 +31,12 @@ export default function App() {
   const isCompact = width < 640 && !editMode // <sm und View-Mode
 
   /* ----------  Persistent Storage  ---------- */
-const save = useCallback(
-  throttleFn((data: Member[]) => {
-    localStorage.setItem('members', JSON.stringify(data))
-  }, 500),
-  []
-)
-
-
+  const save = useCallback(
+    throttleFn((data: Member[]) => {
+      localStorage.setItem('members', JSON.stringify(data))
+    }, 500),
+    []
+  )
 
   useEffect(() => {
     if (members.length) save(members)
@@ -85,7 +78,6 @@ const save = useCallback(
       {/* Chart */}
       <section className={isCompact ? '' : 'mb-4'}>
         <Chart members={members} compact={isCompact} />
-        
       </section>
 
       {/* Export / Import */}
