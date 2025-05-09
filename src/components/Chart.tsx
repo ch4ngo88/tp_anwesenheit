@@ -5,117 +5,92 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
   LabelList,
+  Cell,
 } from 'recharts'
+import { useMemo } from 'react'
+import { useWindowSize } from '../hooks/useWindowSize'
 import type { Member } from '../types/member'
 
 interface Props {
   members: Member[]
+  compact: boolean
 }
 
-export default function Chart({ members }: Props) {
-  const allDates = Array.from(
-    new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))
-  ).sort()
+export default function Chart({ members, compact }: Props) {
+  const { height: vpHeight } = useWindowSize()
 
-  const rawData = members.map((m) => {
-    const relevantDates = allDates.filter((d) => d >= m.joined)
-    const relevantEntries = m.attendance.filter((a) => relevantDates.includes(a.date))
-    const total = relevantDates.length
-    const present = relevantEntries.filter((a) => a.present).length
-    const percent = total > 0 ? Math.round((present / total) * 100) : 0
-    return { name: m.name, percent }
-  })
+  /* ----------  Datenaufbereitung  ---------- */
+  const allDates = useMemo(
+    () => Array.from(new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))).sort(),
+    [members]
+  )
 
-  const sorted = [...rawData].sort((a, b) => b.percent - a.percent)
+  const rawData = useMemo(
+    () =>
+      members.map((m) => {
+        const relevant = allDates.filter((d) => d >= m.joined)
+        const entries = m.attendance.filter((a) => relevant.includes(a.date))
+        const total = relevant.length
+        const present = entries.filter((e) => e.present).length
+        const percent = total ? Math.round((present / total) * 100) : 0
+        return { name: m.name, percent, present, total }
+      }),
+    [members, allDates]
+  )
 
-  let currentRank = 1
-  let lastPercent = sorted[0]?.percent ?? 0
+  const data = useMemo(() => rawData.sort((a, b) => b.percent - a.percent), [rawData])
 
-  const data = sorted.map((entry, index) => {
-    if (index > 0 && entry.percent !== lastPercent) {
-      currentRank += 1
-      lastPercent = entry.percent
-    }
+  /* ----------  Dynamische Höhenberechnung  ---------- */
+  const headerReserve = compact ? 4 : 56 // kaum Platzabzug im Compact-Modus
+  const freeHeight = Math.max(vpHeight - headerReserve, 300)
+  const barHeight = Math.max(10, Math.floor((freeHeight - 60) / data.length))
+  const chartHeight = barHeight * data.length + 60
 
-    return {
-      ...entry,
-      rank: `${currentRank}.`,
-      label: `${currentRank}. ${entry.name} (${entry.percent}%)`,
-    }
-  })
+  /* ----------  Farben  ---------- */
+  const getColor = (p: number) => (p >= 70 ? '#22c55e' : p <= 30 ? '#ef4444' : '#facc15')
 
-  const getColor = (percent: number) => {
-    if (percent >= 70) return '#22c55e' // Grün
-    if (percent <= 30) return '#ef4444' // Rot
-    return '#facc15' // Gelb
-  }
-
-  const chartHeight = Math.max(400, data.length * 38) // etwas kompakter
-
+  /* ----------  Render  ---------- */
   return (
-    <div
-      className="w-full bg-white p-6 rounded-2xl shadow-lg"
-      style={{ height: `${chartHeight + 60}px` }}
-    >
-      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Anwesenheit (in %)</h2>
-      <ResponsiveContainer width="100%" height={chartHeight}>
+    <div className="w-full bg-white rounded-2xl shadow-md" style={{ height: chartHeight }}>
+      <ResponsiveContainer width="100%" height={chartHeight - 10}>
         <BarChart
           layout="vertical"
           data={data}
-          margin={{ top: 10, right: 30, bottom: 10, left: 50 }}
-          barSize={32} // schmaler
+          margin={{ top: 0, right: compact ? 8 : 16, bottom: 0, left: compact ? 70 : 90 }}
+          barSize={barHeight - 2}
         >
-          <XAxis
-            type="number"
-            domain={[0, 100]}
-            tick={{ fontSize: 12 }}
-            tickFormatter={(val) => `${val}%`}
-            axisLine={false}
-            tickLine={false}
-          />
+          <XAxis type="number" domain={[0, 100]} hide />
           <YAxis
             type="category"
-            dataKey="rank"
-            tick={false}
-            width={0}
-            axisLine={false}
-            tickLine={false}
+            dataKey="name"
+            width={compact ? 70 : 90}
+            tick={{ fontSize: compact ? 8 : 9, fill: '#374151' }}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
-              fontSize: '14px',
-              color: '#111827',
-              padding: '8px 12px',
+            formatter={(v: number, _n, props) => {
+              const it = props.payload as any
+              return [`${v}%`, `${it.present}x anwesend von ${it.total} Terminen`]
             }}
-            formatter={(value: number) => [`${value}%`, 'Anwesenheit']}
-            labelFormatter={() => ''}
+            contentStyle={{
+              backgroundColor: '#fff',
+              border: '1px solid #e5e7eb',
+              borderRadius: 12,
+              boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+              fontSize: 12,
+              color: '#111827',
+              padding: '6px 10px',
+            }}
           />
-          <Bar dataKey="percent" radius={[16, 16, 16, 16]}>
-            {data.map((entry) => (
-              <Cell
-                key={`cell-${entry.name}`}
-                fill={getColor(entry.percent)}
-                style={{ transition: 'fill 0.3s ease' }}
-              />
+          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
+            {data.map((d) => (
+              <Cell key={d.name} fill={getColor(d.percent)} />
             ))}
             <LabelList
-              dataKey="label"
-              position="insideLeft"
-              style={{
-                fill: '#1f2937', // Gray-800
-                fontWeight: 600,
-                fontSize: 12,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                pointerEvents: 'none',
-              }}
+              dataKey="percent"
+              position="insideRight"
+              formatter={(v: number) => `${v}%`}
+              style={{ fill: '#1f2937', fontWeight: 600, fontSize: compact ? 8 : 9 }}
             />
           </Bar>
         </BarChart>

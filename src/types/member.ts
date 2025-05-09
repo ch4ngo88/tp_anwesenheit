@@ -1,12 +1,11 @@
-// types/member.ts
 export interface AttendanceEntry {
-  date: string // ISO
+  date: string // »YYYY-MM-DD«
   present: boolean
 }
 
 export interface Member {
   id: string
   name: string
-  joined: string // ISO
+  joined: string // Eintrittsdatum »YYYY-MM-DD«
   attendance: AttendanceEntry[]
 }

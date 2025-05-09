@@ -1,116 +1,93 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import type { Member } from '../types/member'
 
 interface Props {
   members: Member[]
-  onImport: (members: Member[]) => void
+  onImport: (m: Member[]) => void
   editMode: boolean
 }
 
 export default function ExportControls({ members, onImport, editMode }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
+  if (!editMode) return null
 
   const exportJson = () => {
-    try {
-      const blob = new Blob([JSON.stringify(members, null, 2)], {
-        type: 'application/json',
-      })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'members-export.json'
-      link.click()
-    } catch {
-      alert('❌ Fehler beim Exportieren als JSON')
-    }
+    const blob = new Blob([JSON.stringify(members, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    Object.assign(document.createElement('a'), {
+      href: url,
+      download: 'members-export.json',
+    }).click()
   }
 
-  const exportTS = () => {
-    try {
-      const header = `// Auto-generiert von ExportControls.tsx
-import type { Member } from '../types/member'
-
-export const initialMembers: Member[] = `
-      const content = JSON.stringify(members, null, 2)
-      const full = `${header}${content}\n`
-
-      const blob = new Blob([full], { type: 'text/plain' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'members.ts'
-      link.click()
-    } catch {
-      alert('❌ Fehler beim Exportieren als TypeScript')
-    }
+  const exportTs = () => {
+    const header =
+      "// Auto-generiert von ExportControls.tsx\nimport type { Member } from '../types/member'\n\nexport const initialMembers: Member[] = "
+    const blob = new Blob([header + JSON.stringify(members, null, 2) + '\n'], {
+      type: 'text/plain',
+    })
+    const url = URL.createObjectURL(blob)
+    Object.assign(document.createElement('a'), {
+      href: url,
+      download: 'members.ts',
+    }).click()
   }
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const importJson = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
     const reader = new FileReader()
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result as string)
-        if (Array.isArray(data) && data.every((m) => m.id && m.name && 'attendance' in m)) {
-          onImport(data)
-        } else {
-          alert('❌ Ungültige Datenstruktur')
-        }
+        if (Array.isArray(data) && data.every((m) => m.id && m.name && m.attendance)) onImport(data)
+        else alert('❌ Ungültige Datenstruktur')
       } catch {
-        alert('❌ Fehler beim Laden der Datei')
+        alert('❌ Fehler beim Laden')
       }
     }
     reader.readAsText(file)
     e.target.value = ''
   }
 
-  if (!editMode) return null
-
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 mb-4 text-sm">
       <button
         onClick={exportJson}
-        className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm"
+        className="bg-gray-800 text-white px-3 py-1.5 rounded hover:bg-gray-700"
       >
-        📤 Export JSON
+        📤 JSON
       </button>
 
       <button
-        onClick={() => fileInputRef.current?.click()}
-        className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm"
+        onClick={() => fileInput.current?.click()}
+        className="bg-gray-800 text-white px-3 py-1.5 rounded hover:bg-gray-700"
       >
-        📥 Import JSON
+        📥 Import
       </button>
 
       <button
-        onClick={exportTS}
-        className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 text-sm"
+        onClick={exportTs}
+        className="bg-blue-700 text-white px-3 py-1.5 rounded hover:bg-blue-800"
       >
-        📝 Export als TypeScript
+        📝 TypeScript
       </button>
 
-      <input
-        type="file"
-        accept=".json"
-        ref={fileInputRef}
-        onChange={handleImport}
-        className="hidden"
-      />
+      <input type="file" accept=".json" ref={fileInput} onChange={importJson} className="hidden" />
+
       <button
         onClick={() => {
           if (confirm('⚠️ Lokale Änderungen wirklich löschen und zurücksetzen?')) {
             localStorage.removeItem('members')
-            alert(
-              '✅ Lokale Daten wurden zurückgesetzt.\nInitialdaten aus members.ts werden beim nächsten Laden verwendet.'
-            )
+            alert('✅ Zurückgesetzt – Seite lädt neu')
             window.location.reload()
           }
         }}
-        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
+        className="bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700"
       >
-        🔄 Zurücksetzen auf Datei (members.ts)
+        🔄 Reset
       </button>
     </div>
   )
