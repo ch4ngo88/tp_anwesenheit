@@ -8,16 +8,24 @@ import logo from './assets/logo.jpg'
 import { useWindowSize } from './hooks/useWindowSize'
 
 /* ----------  Throttle Utility  ---------- */
-function throttle<T extends (...a: any[]) => void>(fn: T, delay: number): T {
+export function throttleFn<A extends unknown[], R>(
+  fn: (...args: A) => R,
+  delay: number
+): (...args: A) => void {
   let last = 0
-  return ((...args: Parameters<T>) => {
+  return (...args: A) => {
     const now = Date.now()
     if (now - last >= delay) {
       last = now
       fn(...args)
     }
-  }) as T
+  }
 }
+
+
+
+
+
 
 export default function App() {
   const [members, setMembers] = useState<Member[]>(initialMembers)
@@ -28,16 +36,14 @@ export default function App() {
   const isCompact = width < 640 && !editMode // <sm und View-Mode
 
   /* ----------  Persistent Storage  ---------- */
-  const save = useCallback(
-    throttle((data: Member[]) => {
-      try {
-        localStorage.setItem('members', JSON.stringify(data))
-      } catch (err) {
-        console.error('[save] Fehler:', err)
-      }
-    }, 500),
-    []
-  )
+const save = useCallback(
+  throttleFn((data: Member[]) => {
+    localStorage.setItem('members', JSON.stringify(data))
+  }, 500),
+  []
+)
+
+
 
   useEffect(() => {
     if (members.length) save(members)

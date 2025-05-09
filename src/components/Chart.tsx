@@ -11,6 +11,8 @@ import {
 import { useMemo } from 'react'
 import { useWindowSize } from '../hooks/useWindowSize'
 import type { Member } from '../types/member'
+import type { TooltipProps } from 'recharts'
+
 
 interface Props {
   members: Member[]
@@ -18,16 +20,21 @@ interface Props {
 }
 
 /* ----------  Custom Tooltip  ---------- */
-function CustomTooltip({ active, payload }: any) {
+function CustomTooltip({
+  active,
+  payload,
+}: TooltipProps<number, string>) {
   if (!active || !payload?.length) return null
   const { name, percent, present, total, presentDates } = payload[0].payload
   return (
-    <div   tabIndex={0}
-  onWheelCapture={(e) => {
-  e.stopPropagation()
-  e.preventDefault()
-}}
-className="bg-white border border-gray-200 rounded-xl shadow p-2 text-xs max-w-[180px]">
+    <div
+      tabIndex={0}
+      onWheelCapture={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+      }}
+      className="bg-white border border-gray-200 rounded-xl shadow p-2 text-xs max-w-[180px]"
+    >
       <div className="font-medium mb-1">{name}</div>
       <div className="mb-1">
         {present} von {total} Terminen ({percent}%)
