@@ -25,15 +25,15 @@ export default defineConfig({
         description: 'Digitale Anwesenheitsliste mit Auswertung',
         theme_color: '#22c55e',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
         ],
       },
     }),
   ],
 
   /*  relative Pfade für GitHub Pages */
-  base: '',
+  base: '/tp_anwesenheit/',
 
   /*  kein build.target mehr -> Warning weg */
   build: {

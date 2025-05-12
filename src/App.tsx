@@ -47,7 +47,7 @@ export default function App() {
   return (
     <div
       className={
-        'relative min-h-screen bg-gray-100 text-gray-800 overflow-hidden ' +
+        'relative min-h-screen bg-gray-100 text-gray-800 overflow-auto ' +
         (isCompact ? 'px-1 py-1' : 'px-2 py-3 sm:px-4 sm:py-4')
       }
     >
@@ -55,7 +55,8 @@ export default function App() {
       {selected && (
         <div
           className={
-            'fixed z-30 w-[40vw] max-w-sm rounded-2xl bg-white/95 backdrop-blur-md shadow-xl p-4 ' +
+            'fixed z-30 w-[92vw] max-w-sm rounded-2xl bg-white/95 backdrop-blur-md shadow-xl p-4 ' +
+            'max-h-[calc(100vh-5rem)] overflow-y-auto ' +
             (isCompact ? 'bottom-20 right-2' : 'bottom-4 right-4')
           }
         >

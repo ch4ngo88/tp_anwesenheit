@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npx gh-pages -d dist",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "format": "prettier --write .",
     "fix": "pnpm format && pnpm lint:fix",
