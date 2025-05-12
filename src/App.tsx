@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { initialMembers } from './data/members'
 import type { Member } from './types/member'
 import AttendanceTable from './components/AttendanceTable'
-import Chart from './components/Chart'
+import Chart, { type MemberStats } from './components/Chart'
 import ExportControls from './components/ExportControls'
 import logo from './assets/logo.jpg'
 import { useWindowSize } from './hooks/useWindowSize'
@@ -25,6 +25,7 @@ export function throttleFn<A extends unknown[], R>(
 export default function App() {
   const [members, setMembers] = useState<Member[]>(initialMembers)
   const [editMode, setEditMode] = useState(false)
+  const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
 
   /* ----------  Mobile-Compact Logik  ---------- */
@@ -50,7 +51,40 @@ export default function App() {
         (isCompact ? 'px-1 py-1' : 'px-2 py-3 sm:px-4 sm:py-4')
       }
     >
-      {/* Header – in Compact-View als schwebende Blase unten-rechts */}
+      {/* Info-Panel */}
+      {selected && (
+        <div
+          className={
+            'fixed z-30 w-[40vw] max-w-sm rounded-2xl bg-white/95 backdrop-blur-md shadow-xl p-4 ' +
+            (isCompact ? 'bottom-20 right-2' : 'bottom-4 right-4')
+          }
+        >
+          <header className="flex justify-between items-center mb-2">
+            <h2 className="font-semibold text-sm">{selected.name}</h2>
+            <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-black">
+              ✕
+            </button>
+          </header>
+
+          <p className="text-xs mb-1">
+            Mitglied seit <span className="font-medium">{selected.joined}</span>
+          </p>
+          <p className="text-xs mb-2">
+            {selected.present} von {selected.total} Terminen (
+            <span className="font-medium">{selected.percent}%</span>)
+          </p>
+
+          <div className="max-h-52 overflow-y-auto pr-1">
+            <ul className="list-disc list-inside space-y-0.5 text-xs">
+              {selected.presentDates.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
       <header
         className={
           isCompact
@@ -60,7 +94,6 @@ export default function App() {
       >
         <div className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="h-8 w-8 rounded-full shadow-sm" />
-          {/* Titel bleibt nur ≥xs sichtbar, im Compact-Bubble also fast immer ausgeblendet */}
           <h1 className="hidden xs:block font-semibold leading-tight text-sm">Anwesenheit</h1>
         </div>
 
@@ -77,7 +110,7 @@ export default function App() {
 
       {/* Chart */}
       <section className={isCompact ? '' : 'mb-4'}>
-        <Chart members={members} compact={isCompact} />
+        <Chart members={members} compact={isCompact} onSelect={setSelected} />
       </section>
 
       {/* Export / Import */}

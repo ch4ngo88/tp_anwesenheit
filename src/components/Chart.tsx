@@ -1,52 +1,24 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList,
-  Cell,
-} from 'recharts'
 import { useMemo } from 'react'
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LabelList, Cell } from 'recharts'
 import { useWindowSize } from '../hooks/useWindowSize'
 import type { Member } from '../types/member'
-import type { TooltipProps } from 'recharts'
+
+export type MemberStats = {
+  name: string
+  percent: number
+  present: number
+  total: number
+  presentDates: string[]
+  joined: string
+}
 
 interface Props {
   members: Member[]
   compact: boolean
+  onSelect?: (m: MemberStats) => void
 }
 
-/* ----------  Custom Tooltip  ---------- */
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
-  if (!active || !payload?.length) return null
-  const { name, percent, present, total, presentDates } = payload[0].payload
-  return (
-    <div
-      tabIndex={0}
-      onWheelCapture={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-      }}
-      className="bg-white border border-gray-200 rounded-xl shadow p-2 text-xs max-w-[180px]"
-    >
-      <div className="font-medium mb-1">{name}</div>
-      <div className="mb-1">
-        {present} von {total} Terminen ({percent}%)
-      </div>
-      {presentDates.length > 0 && (
-        <ul className="list-disc list-inside max-h-28 overflow-y-auto space-y-0.5">
-          {presentDates.map((d: string) => (
-            <li key={d}>{d}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
-export default function Chart({ members, compact }: Props) {
+export default function Chart({ members, compact, onSelect }: Props) {
   const { height: vpHeight } = useWindowSize()
 
   /* ----------  Datenaufbereitung  ---------- */
@@ -55,7 +27,7 @@ export default function Chart({ members, compact }: Props) {
     [members]
   )
 
-  const rawData = useMemo(
+  const rawData = useMemo<MemberStats[]>(
     () =>
       members.map((m) => {
         const relevant = allDates.filter((d) => d >= m.joined)
@@ -70,6 +42,7 @@ export default function Chart({ members, compact }: Props) {
           present,
           total,
           presentDates: presentEntries.map((e) => e.date),
+          joined: m.joined,
         }
       }),
     [members, allDates]
@@ -101,16 +74,17 @@ export default function Chart({ members, compact }: Props) {
             type="category"
             dataKey="name"
             width={64}
-            interval={0} // <- das ist der wichtige Teil
+            interval={0}
             tick={{ fontSize: compact ? 8 : 9, fill: '#374151' }}
           />
-          <Tooltip
-            content={<CustomTooltip />}
-            wrapperStyle={{ pointerEvents: 'auto' }} // ← aktiviert Events
-          />{' '}
           <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
             {data.map((d) => (
-              <Cell key={d.name} fill={getColor(d.percent)} />
+              <Cell
+                key={d.name}
+                fill={getColor(d.percent)}
+                onClick={() => onSelect?.(d)}
+                className="cursor-pointer"
+              />
             ))}
             <LabelList
               dataKey="percent"
