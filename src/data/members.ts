@@ -58,6 +58,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -116,6 +120,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -176,6 +184,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -234,6 +246,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -294,6 +310,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": true
+      },
+      {
+        "date": "2025-06-01",
+        "present": false
       }
     ]
   },
@@ -352,6 +372,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": false
+      },
+      {
+        "date": "2025-06-01",
         "present": false
       }
     ]
@@ -412,6 +436,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": true
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -470,6 +498,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -530,6 +562,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -588,6 +624,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -648,6 +688,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -707,6 +751,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -765,6 +813,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -825,6 +877,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -883,6 +939,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -943,6 +1003,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": true
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -1002,6 +1066,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": true
+      },
+      {
+        "date": "2025-06-01",
+        "present": false
       }
     ]
   },
@@ -1060,6 +1128,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -1120,6 +1192,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -1178,6 +1254,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -1238,6 +1318,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": true
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -1296,6 +1380,10 @@ export const initialMembers: Member[] = [
       },
       {
         "date": "2025-05-25",
+        "present": true
+      },
+      {
+        "date": "2025-06-01",
         "present": true
       }
     ]
@@ -1356,6 +1444,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -1415,6 +1507,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   },
@@ -1474,6 +1570,10 @@ export const initialMembers: Member[] = [
       {
         "date": "2025-05-25",
         "present": false
+      },
+      {
+        "date": "2025-06-01",
+        "present": true
       }
     ]
   }
