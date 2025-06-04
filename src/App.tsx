@@ -23,7 +23,18 @@ export function throttleFn<A extends unknown[], R>(
 }
 
 export default function App() {
-  const [members, setMembers] = useState<Member[]>(initialMembers)
+  const [members, setMembers] = useState<Member[]>(() => {
+    try {
+      const stored = localStorage.getItem('members')
+      if (stored) {
+        const data = JSON.parse(stored)
+        if (Array.isArray(data)) return data as Member[]
+      }
+    } catch {
+      /* ignore */
+    }
+    return initialMembers
+  })
   const [editMode, setEditMode] = useState(false)
   const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
