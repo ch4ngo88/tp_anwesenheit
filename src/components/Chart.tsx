@@ -58,7 +58,16 @@ export default function Chart({ members, compact, mode, onSelect }: Props) {
     [members, allDates, mode]
   )
 
-  const data = useMemo(() => rawData.sort((a, b) => b.percent - a.percent), [rawData])
+  const data = useMemo(
+    () =>
+      rawData.sort((a, b) => (mode === 'training' ? b.percent - a.percent : b.present - a.present)),
+    [rawData, mode]
+  )
+
+  const maxValue = useMemo(
+    () => (mode === 'training' ? 100 : Math.max(1, ...rawData.map((d) => d.total))),
+    [mode, rawData]
+  )
 
   /* ----------  Dynamische Höhenberechnung  ---------- */
   const headerReserve = compact ? 4 : 56
@@ -79,7 +88,7 @@ export default function Chart({ members, compact, mode, onSelect }: Props) {
           margin={{ top: 1, right: compact ? 8 : 16, bottom: 1, left: 0 }}
           barSize={barHeight - 2}
         >
-          <XAxis type="number" domain={[0, 100]} hide />
+          <XAxis type="number" domain={[0, maxValue]} hide />
           <YAxis
             type="category"
             dataKey="name"
@@ -87,7 +96,7 @@ export default function Chart({ members, compact, mode, onSelect }: Props) {
             interval={0}
             tick={{ fontSize: compact ? 8 : 9, fill: '#374151' }}
           />
-          <Bar dataKey="percent" radius={[6, 6, 6, 6]}>
+          <Bar dataKey={mode === 'training' ? 'percent' : 'present'} radius={[6, 6, 6, 6]}>
             {data.map((d) => (
               <Cell
                 key={d.name}
@@ -97,9 +106,9 @@ export default function Chart({ members, compact, mode, onSelect }: Props) {
               />
             ))}
             <LabelList
-              dataKey="percent"
+              dataKey={mode === 'training' ? 'percent' : 'present'}
               position="insideRight"
-              formatter={(v: number) => `${v}%`}
+              formatter={(v: number) => (mode === 'training' ? `${v}%` : String(v))}
               style={{ fill: '#1f2937', fontWeight: 600, fontSize: compact ? 8 : 9 }}
             />
           </Bar>

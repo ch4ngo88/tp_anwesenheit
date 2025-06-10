@@ -47,8 +47,7 @@ export default function App() {
   const { width } = useWindowSize()
 
   const members = data[currentSem] || []
-  const setMembers = (m: Member[]) =>
-    setData((d) => ({ ...d, [currentSem]: m }))
+  const setMembers = (m: Member[]) => setData((d) => ({ ...d, [currentSem]: m }))
 
   const isCompact = width < 640 && !editMode
 
@@ -91,8 +90,14 @@ export default function App() {
             Mitglied seit <span className="font-medium">{selected.joined}</span>
           </p>
           <p className="text-xs mb-2">
-            {selected.present} von {selected.total} Terminen (
-            <span className="font-medium">{selected.percent}%</span>)
+            {selected.present} von {selected.total}{' '}
+            {mode === 'training' ? 'Terminen' : 'Auftritten'}
+            {mode === 'training' && (
+              <>
+                {' '}
+                (<span className="font-medium">{selected.percent}%</span>)
+              </>
+            )}
           </p>
 
           <div className="max-h-52 overflow-y-auto pr-1">
@@ -148,7 +153,7 @@ export default function App() {
             onClick={() => setMode((m) => (m === 'training' ? 'performances' : 'training'))}
             className="px-3 py-1.5 rounded bg-gray-500 text-white text-xs sm:text-sm"
           >
-            {mode === 'training' ? 'Auftritte' : 'Training'}
+            🔁 {mode === 'training' ? 'Auftritte' : 'Training'}
           </button>
 
           <button
@@ -172,12 +177,7 @@ export default function App() {
       <ExportControls members={members} onImport={setMembers} editMode={editMode} />
 
       {/* Tabelle */}
-      <AttendanceTable
-        members={members}
-        onUpdate={setMembers}
-        editMode={editMode}
-        mode={mode}
-      />
+      <AttendanceTable members={members} onUpdate={setMembers} editMode={editMode} mode={mode} />
     </div>
   )
 }
