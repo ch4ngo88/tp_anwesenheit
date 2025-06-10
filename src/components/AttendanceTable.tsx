@@ -35,6 +35,15 @@ export default function AttendanceTable({ members, onUpdate, editMode, mode }: P
     onUpdate(upd)
   }
 
+  const deleteDate = (date: string) => {
+    if (!confirm(`Datum "${date}" löschen?`)) return
+    const upd = members.map((m) => ({
+      ...m,
+      attendance: m.attendance.filter((a) => a.date !== date),
+    }))
+    onUpdate(upd)
+  }
+
   const addDate = () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return
     const upd = members.map((m) => {
@@ -113,7 +122,15 @@ export default function AttendanceTable({ members, onUpdate, editMode, mode }: P
             <th className="border p-1.5 text-left bg-gray-100 sticky left-0 z-20">Mitglied</th>
             {allDates.map((d) => (
               <th key={d} className="border p-1 text-center bg-gray-100">
-                {d}
+                <div className="flex items-center justify-center gap-1">
+                  <span>{d}</span>
+                  <button
+                    onClick={() => deleteDate(d)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    🗑
+                  </button>
+                </div>
               </th>
             ))}
           </tr>
