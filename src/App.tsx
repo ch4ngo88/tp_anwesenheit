@@ -52,10 +52,33 @@ export default function App() {
 
   const members = data[currentSem] || []
   const setMembers = (m: Member[]) =>
-    setData((d) => ({
-      ...d,
-      [currentSem]: m,
-    }))
+    setData((d) => {
+      const updated: Semesters = { ...d, [currentSem]: m }
+      const ids = new Set(m.map((x) => x.id))
+      const nameMap = new Map(m.map((x) => [x.id, x.name]))
+      const joinedMap = new Map(m.map((x) => [x.id, x.joined]))
+
+      for (const key of Object.keys(d)) {
+        if (key === currentSem) continue
+        const list = d[key] ?? []
+        const filtered = list.filter((mem) => ids.has(mem.id))
+        const missingIds = [...ids].filter((id) => !list.some((x) => x.id === id))
+        const missing = missingIds.map((id) => ({
+          id,
+          name: nameMap.get(id)!,
+          joined: joinedMap.get(id)!,
+          attendance: [],
+          performances: [],
+        }))
+        const synced = [...filtered, ...missing].map((mem) => ({
+          ...mem,
+          name: nameMap.get(mem.id)!,
+          joined: joinedMap.get(mem.id)!,
+        }))
+        updated[key] = synced
+      }
+      return updated
+    })
 
   const isCompact = width < 640 && !editMode
 
