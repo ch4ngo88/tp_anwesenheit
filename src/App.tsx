@@ -24,6 +24,9 @@ export function throttleFn<A extends unknown[], R>(
 
 type Semesters = Record<string, Member[]>
 
+const cloneMembers = (m: Member[]): Member[] =>
+  m.map((x) => ({ ...x, attendance: [], performances: [] }))
+
 const loadSemesters = (): Semesters => {
   const raw = localStorage.getItem('semesters')
   if (raw) {
@@ -33,7 +36,7 @@ const loadSemesters = (): Semesters => {
       /* ignore */
     }
   }
-  return { '2025-1': initialMembers }
+  return { '2025-1': initialMembers, '2025-2': cloneMembers(initialMembers) }
 }
 
 export default function App() {
@@ -135,19 +138,25 @@ export default function App() {
               </option>
             ))}
           </select>
-          <button
-            onClick={() => {
-              const year = prompt('Jahr (z.B. 2026)')
-              const half = prompt('Halbjahr (1 oder 2)')
-              if (!year || !half) return
-              const key = `${year}-${half}`
-              setData((d) => (d[key] ? d : { ...d, [key]: [] }))
-              setCurrentSem(key)
-            }}
-            className="px-2 py-1 rounded bg-green-600 text-white text-xs sm:text-sm hover:bg-green-700"
-          >
-            ➕
-          </button>
+          {editMode && (
+            <button
+              onClick={() => {
+                const year = prompt('Jahr (z.B. 2026)')
+                const half = prompt('Halbjahr (1 oder 2)')
+                if (!year || !half) return
+                const key = `${year}-${half}`
+                setData((d) => {
+                  if (d[key]) return d
+                  const template = d[currentSem] || []
+                  return { ...d, [key]: cloneMembers(template) }
+                })
+                setCurrentSem(key)
+              }}
+              className="px-2 py-1 rounded bg-green-600 text-white text-xs sm:text-sm hover:bg-green-700"
+            >
+              ➕
+            </button>
+          )}
 
           <button
             onClick={() => setMode((m) => (m === 'training' ? 'performances' : 'training'))}
