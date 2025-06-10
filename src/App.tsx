@@ -23,26 +23,20 @@ export function throttleFn<A extends unknown[], R>(
 }
 
 export default function App() {
-codex/zweiten-balken-für-auftritte-hinzufügen
-  const [members, setMembers] = useState<Member[]>(initialMembers)
-  const [mode, setMode] = useState<'training' | 'performances'>('training')
-
-const [members, setMembers] = useState<Member[]>(() => {
-  try {
-    const stored = localStorage.getItem('members')
-    if (stored) {
-      const data = JSON.parse(stored)
-      if (Array.isArray(data)) return data as Member[]
+  const [members, setMembers] = useState<Member[]>(() => {
+    try {
+      const stored = localStorage.getItem('members')
+      if (stored) {
+        const data = JSON.parse(stored)
+        if (Array.isArray(data)) return data as Member[]
+      }
+    } catch {
+      /* ignore */
     }
-  } catch {
-    /* ignore */
-  }
-  return initialMembers
-})
+    return initialMembers
+  })
 
-const [mode, setMode] = useState<'training' | 'performances'>('training')
-
-main
+  const [mode, setMode] = useState<'training' | 'performances'>('training')
   const [editMode, setEditMode] = useState(false)
   const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
