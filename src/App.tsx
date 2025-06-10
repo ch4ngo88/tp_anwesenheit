@@ -24,6 +24,7 @@ export function throttleFn<A extends unknown[], R>(
 
 export default function App() {
   const [members, setMembers] = useState<Member[]>(initialMembers)
+  const [mode, setMode] = useState<'training' | 'performances'>('training')
   const [editMode, setEditMode] = useState(false)
   const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
@@ -98,27 +99,41 @@ export default function App() {
           <h1 className="hidden xs:block font-semibold leading-tight text-sm">Anwesenheit</h1>
         </div>
 
-        <button
-          onClick={() => setEditMode((v) => !v)}
-          className={
-            'px-3 py-1.5 rounded text-white text-xs sm:text-sm font-medium ' +
-            (editMode ? 'bg-red-600' : 'bg-gray-700')
-          }
-        >
-          {editMode ? '🛠 Edit' : '✏️ Edit'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMode((m) => (m === 'training' ? 'performances' : 'training'))}
+            className="px-3 py-1.5 rounded bg-gray-500 text-white text-xs sm:text-sm"
+          >
+            {mode === 'training' ? 'Auftritte' : 'Training'}
+          </button>
+
+          <button
+            onClick={() => setEditMode((v) => !v)}
+            className={
+              'px-3 py-1.5 rounded text-white text-xs sm:text-sm font-medium ' +
+              (editMode ? 'bg-red-600' : 'bg-gray-700')
+            }
+          >
+            {editMode ? '🛠 Edit' : '✏️ Edit'}
+          </button>
+        </div>
       </header>
 
       {/* Chart */}
       <section className={isCompact ? '' : 'mb-4'}>
-        <Chart members={members} compact={isCompact} onSelect={setSelected} />
+        <Chart members={members} compact={isCompact} mode={mode} onSelect={setSelected} />
       </section>
 
       {/* Export / Import */}
       <ExportControls members={members} onImport={setMembers} editMode={editMode} />
 
       {/* Tabelle */}
-      <AttendanceTable members={members} onUpdate={setMembers} editMode={editMode} />
+      <AttendanceTable
+        members={members}
+        onUpdate={setMembers}
+        editMode={editMode}
+        mode={mode}
+      />
     </div>
   )
 }

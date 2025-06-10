@@ -15,23 +15,33 @@ export type MemberStats = {
 interface Props {
   members: Member[]
   compact: boolean
+  mode: 'training' | 'performances'
   onSelect?: (m: MemberStats) => void
 }
 
-export default function Chart({ members, compact, onSelect }: Props) {
+export default function Chart({ members, compact, mode, onSelect }: Props) {
   const { height: vpHeight } = useWindowSize()
 
   /* ----------  Datenaufbereitung  ---------- */
   const allDates = useMemo(
-    () => Array.from(new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))).sort(),
-    [members]
+    () =>
+      Array.from(
+        new Set(
+          members.flatMap((m) =>
+            (mode === 'training' ? m.attendance : m.performances).map((a) => a.date)
+          )
+        )
+      ).sort(),
+    [members, mode]
   )
 
   const rawData = useMemo<MemberStats[]>(
     () =>
       members.map((m) => {
         const relevant = allDates.filter((d) => d >= m.joined)
-        const entries = m.attendance.filter((a) => relevant.includes(a.date))
+        const entries = (mode === 'training' ? m.attendance : m.performances).filter((a) =>
+          relevant.includes(a.date)
+        )
         const total = relevant.length
         const presentEntries = entries.filter((e) => e.present)
         const present = presentEntries.length
@@ -45,7 +55,7 @@ export default function Chart({ members, compact, onSelect }: Props) {
           joined: m.joined,
         }
       }),
-    [members, allDates]
+    [members, allDates, mode]
   )
 
   const data = useMemo(() => rawData.sort((a, b) => b.percent - a.percent), [rawData])

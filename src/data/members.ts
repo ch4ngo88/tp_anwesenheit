@@ -68,6 +68,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706088282',
@@ -135,6 +136,7 @@ export const initialMembers: Member[] = [
         present: false,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706097439',
@@ -202,6 +204,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706106428',
@@ -269,6 +272,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706130075',
@@ -336,6 +340,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706153645',
@@ -403,6 +408,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706163971',
@@ -470,6 +476,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706187566',
@@ -537,6 +544,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706226504',
@@ -604,6 +612,7 @@ export const initialMembers: Member[] = [
         present: false,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706269888',
@@ -671,6 +680,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706310267',
@@ -738,6 +748,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706327841',
@@ -805,6 +816,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706336018',
@@ -872,6 +884,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706344290',
@@ -939,6 +952,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706351207',
@@ -1006,6 +1020,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706363189',
@@ -1073,6 +1088,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706375610',
@@ -1140,6 +1156,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706395863',
@@ -1207,6 +1224,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706417439',
@@ -1274,6 +1292,7 @@ export const initialMembers: Member[] = [
         present: false,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706429726',
@@ -1341,6 +1360,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706446667',
@@ -1408,6 +1428,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706475750',
@@ -1475,6 +1496,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706489324',
@@ -1542,6 +1564,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706513427',
@@ -1609,6 +1632,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1746706526434',
@@ -1676,6 +1700,7 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
   {
     id: 'm_1749542406491',
@@ -1695,5 +1720,6 @@ export const initialMembers: Member[] = [
         present: true,
       },
     ],
+    performances: [],
   },
 ]
