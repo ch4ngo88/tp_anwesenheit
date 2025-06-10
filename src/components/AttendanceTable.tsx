@@ -18,9 +18,7 @@ export default function AttendanceTable({ members, onUpdate, editMode, mode }: P
 
   const key = mode === 'training' ? 'attendance' : 'performances'
 
-  const allDates = Array.from(
-    new Set(members.flatMap((m) => m[key].map((a) => a.date)))
-  ).sort()
+  const allDates = Array.from(new Set(members.flatMap((m) => m[key].map((a) => a.date)))).sort()
 
   /* ----------  Handler  ---------- */
   const toggle = (id: string, date: string) => {
@@ -124,10 +122,7 @@ export default function AttendanceTable({ members, onUpdate, editMode, mode }: P
               <th key={d} className="border p-1 text-center bg-gray-100">
                 <div className="flex items-center justify-center gap-1">
                   <span>{d}</span>
-                  <button
-                    onClick={() => deleteDate(d)}
-                    className="text-red-500 hover:text-red-700"
-                  >
+                  <button onClick={() => deleteDate(d)} className="text-red-500 hover:text-red-700">
                     🗑
                   </button>
                 </div>
