@@ -22,8 +22,27 @@ export function throttleFn<A extends unknown[], R>(
   }
 }
 
+type Semesters = Record<string, Member[]>
+
+const loadSemesters = (): Semesters => {
+  const raw = localStorage.getItem('semesters')
+  if (raw) {
+    try {
+      return JSON.parse(raw) as Semesters
+    } catch {
+      /* ignore */
+    }
+  }
+  return { '2025-1': initialMembers }
+}
+
 export default function App() {
-  const [members, setMembers] = useState<Member[]>(initialMembers)
+  const [data, setData] = useState<Semesters>(() => loadSemesters())
+  const [currentSem, setCurrentSem] = useState<string>(
+    () => Object.keys(loadSemesters())[0] || '2025-1'
+  )
+  const members = data[currentSem] || []
+  const setMembers = (m: Member[]) => setData((d) => ({ ...d, [currentSem]: m }))
   const [editMode, setEditMode] = useState(false)
   const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
@@ -33,15 +52,15 @@ export default function App() {
 
   /* ----------  Persistent Storage  ---------- */
   const save = useCallback(
-    throttleFn((data: Member[]) => {
-      localStorage.setItem('members', JSON.stringify(data))
+    throttleFn((d: Semesters) => {
+      localStorage.setItem('semesters', JSON.stringify(d))
     }, 500),
     []
   )
 
   useEffect(() => {
-    if (members.length) save(members)
-  }, [members, save])
+    save(data)
+  }, [data, save])
 
   /* ----------  Render  ---------- */
   return (
@@ -98,15 +117,41 @@ export default function App() {
           <h1 className="hidden xs:block font-semibold leading-tight text-sm">Anwesenheit</h1>
         </div>
 
-        <button
-          onClick={() => setEditMode((v) => !v)}
-          className={
-            'px-3 py-1.5 rounded text-white text-xs sm:text-sm font-medium ' +
-            (editMode ? 'bg-red-600' : 'bg-gray-700')
-          }
-        >
-          {editMode ? '🛠 Edit' : '✏️ Edit'}
-        </button>
+        <div className="flex items-center gap-2">
+          <select
+            value={currentSem}
+            onChange={(e) => setCurrentSem(e.target.value)}
+            className="border rounded px-1 py-0.5 text-xs sm:text-sm"
+          >
+            {Object.keys(data).map((k) => (
+              <option key={k} value={k}>
+                {k}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              const year = prompt('Jahr (z.B. 2026)')
+              const half = prompt('Halbjahr (1 oder 2)')
+              if (!year || !half) return
+              const key = `${year}-${half}`
+              setData((d) => (d[key] ? d : { ...d, [key]: [] }))
+              setCurrentSem(key)
+            }}
+            className="px-2 py-1 rounded bg-green-600 text-white text-xs sm:text-sm hover:bg-green-700"
+          >
+            ➕
+          </button>
+          <button
+            onClick={() => setEditMode((v) => !v)}
+            className={
+              'px-3 py-1.5 rounded text-white text-xs sm:text-sm font-medium ' +
+              (editMode ? 'bg-red-600' : 'bg-gray-700')
+            }
+          >
+            {editMode ? '🛠 Edit' : '✏️ Edit'}
+          </button>
+        </div>
       </header>
 
       {/* Chart */}
