@@ -22,6 +22,7 @@ export function throttleFn<A extends unknown[], R>(
   }
 }
 
+/* ----------  Types & Storage Loader  ---------- */
 type Semesters = Record<string, Member[]>
 
 const cloneMembers = (m: Member[]): Member[] =>
@@ -50,7 +51,11 @@ export default function App() {
   const { width } = useWindowSize()
 
   const members = data[currentSem] || []
-  const setMembers = (m: Member[]) => setData((d) => ({ ...d, [currentSem]: m }))
+  const setMembers = (m: Member[]) =>
+    setData((d) => ({
+      ...d,
+      [currentSem]: m,
+    }))
 
   const isCompact = width < 640 && !editMode
 
