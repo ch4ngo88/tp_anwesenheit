@@ -22,41 +22,52 @@ export function throttleFn<A extends unknown[], R>(
   }
 }
 
-export default function App() {
-  const [members, setMembers] = useState<Member[]>(() => {
+/* ----------  Types & Storage Loader  ---------- */
+type Semesters = Record<string, Member[]>
+
+const loadSemesters = (): Semesters => {
+  const raw = localStorage.getItem('semesters')
+  if (raw) {
     try {
-      const stored = localStorage.getItem('members')
-      if (stored) {
-        const data = JSON.parse(stored)
-        if (Array.isArray(data)) return data as Member[]
-      }
+      return JSON.parse(raw) as Semesters
     } catch {
       /* ignore */
     }
-    return initialMembers
-  })
+  }
+  return { '2025-1': initialMembers }
+}
 
+export default function App() {
+  const [data, setData] = useState<Semesters>(() => loadSemesters())
+  const [currentSem, setCurrentSem] = useState<string>(
+    () => Object.keys(loadSemesters())[0] || '2025-1'
+  )
   const [mode, setMode] = useState<'training' | 'performances'>('training')
   const [editMode, setEditMode] = useState(false)
   const [selected, setSelected] = useState<MemberStats | null>(null)
   const { width } = useWindowSize()
 
-  /* ----------  Mobile-Compact Logik  ---------- */
-  const isCompact = width < 640 && !editMode // <sm und View-Mode
+  const members = data[currentSem] || []
+  const setMembers = (m: Member[]) =>
+    setData((d) => ({
+      ...d,
+      [currentSem]: m,
+    }))
+
+  const isCompact = width < 640 && !editMode
 
   /* ----------  Persistent Storage  ---------- */
   const save = useCallback(
-    throttleFn((data: Member[]) => {
-      localStorage.setItem('members', JSON.stringify(data))
+    throttleFn((d: Semesters) => {
+      localStorage.setItem('semesters', JSON.stringify(d))
     }, 500),
     []
   )
 
   useEffect(() => {
-    if (members.length) save(members)
-  }, [members, save])
+    save(data)
+  }, [data, save])
 
-  /* ----------  Render  ---------- */
   return (
     <div
       className={
@@ -84,8 +95,14 @@ export default function App() {
             Mitglied seit <span className="font-medium">{selected.joined}</span>
           </p>
           <p className="text-xs mb-2">
-            {selected.present} von {selected.total} Terminen (
-            <span className="font-medium">{selected.percent}%</span>)
+            {selected.present} von {selected.total}{' '}
+            {mode === 'training' ? 'Terminen' : 'Auftritten'}
+            {mode === 'training' && (
+              <>
+                {' '}
+                (<span className="font-medium">{selected.percent}%</span>)
+              </>
+            )}
           </p>
 
           <div className="max-h-52 overflow-y-auto pr-1">
@@ -112,11 +129,36 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2">
+          <select
+            value={currentSem}
+            onChange={(e) => setCurrentSem(e.target.value)}
+            className="border rounded px-1 py-0.5 text-xs sm:text-sm"
+          >
+            {Object.keys(data).map((k) => (
+              <option key={k} value={k}>
+                {k}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              const year = prompt('Jahr (z.B. 2026)')
+              const half = prompt('Halbjahr (1 oder 2)')
+              if (!year || !half) return
+              const key = `${year}-${half}`
+              setData((d) => (d[key] ? d : { ...d, [key]: [] }))
+              setCurrentSem(key)
+            }}
+            className="px-2 py-1 rounded bg-green-600 text-white text-xs sm:text-sm hover:bg-green-700"
+          >
+            ➕
+          </button>
+
           <button
             onClick={() => setMode((m) => (m === 'training' ? 'performances' : 'training'))}
             className="px-3 py-1.5 rounded bg-gray-500 text-white text-xs sm:text-sm"
           >
-            {mode === 'training' ? 'Auftritte' : 'Training'}
+            🔁 {mode === 'training' ? 'Auftritte' : 'Training'}
           </button>
 
           <button
@@ -140,12 +182,7 @@ export default function App() {
       <ExportControls members={members} onImport={setMembers} editMode={editMode} />
 
       {/* Tabelle */}
-      <AttendanceTable
-        members={members}
-        onUpdate={setMembers}
-        editMode={editMode}
-        mode={mode}
-      />
+      <AttendanceTable members={members} onUpdate={setMembers} editMode={editMode} mode={mode} />
     </div>
   )
 }
