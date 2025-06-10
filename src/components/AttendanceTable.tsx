@@ -5,9 +5,10 @@ interface Props {
   members: Member[]
   onUpdate: (updated: Member[]) => void
   editMode: boolean
+  mode: 'training' | 'performances'
 }
 
-export default function AttendanceTable({ members, onUpdate, editMode }: Props) {
+export default function AttendanceTable({ members, onUpdate, editMode, mode }: Props) {
   /* ───────── Nur in Edit-Mode sichtbar ───────── */
   if (!editMode) return null
 
@@ -15,29 +16,42 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
   const [newName, setNewName] = useState('')
   const [newJoined, setNewJoined] = useState('')
 
+  const key = mode === 'training' ? 'attendance' : 'performances'
+
   const allDates = Array.from(
-    new Set(members.flatMap((m) => m.attendance.map((a) => a.date)))
+    new Set(members.flatMap((m) => m[key].map((a) => a.date)))
   ).sort()
 
   /* ----------  Handler  ---------- */
   const toggle = (id: string, date: string) => {
     const upd = members.map((m) => {
       if (m.id !== id) return m
-      const att = m.attendance.some((a) => a.date === date)
-        ? m.attendance.map((a) => (a.date === date ? { ...a, present: !a.present } : a))
-        : [...m.attendance, { date, present: true }]
-      return { ...m, attendance: att.sort((a, b) => a.date.localeCompare(b.date)) }
+      const list = m[key]
+      const att = list.some((a) => a.date === date)
+        ? list.map((a) => (a.date === date ? { ...a, present: !a.present } : a))
+        : [...list, { date, present: true }]
+      return { ...m, [key]: att.sort((a, b) => a.date.localeCompare(b.date)) }
     })
+    onUpdate(upd)
+  }
+
+  const deleteDate = (date: string) => {
+    if (!confirm(`Datum "${date}" löschen?`)) return
+    const upd = members.map((m) => ({
+      ...m,
+      attendance: m.attendance.filter((a) => a.date !== date),
+    }))
     onUpdate(upd)
   }
 
   const addDate = () => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) return
     const upd = members.map((m) => {
-      if (m.attendance.some((a) => a.date === newDate)) return m
+      const list = m[key]
+      if (list.some((a) => a.date === newDate)) return m
       return {
         ...m,
-        attendance: [...m.attendance, { date: newDate, present: false }].sort((a, b) =>
+        [key]: [...list, { date: newDate, present: false }].sort((a, b) =>
           a.date.localeCompare(b.date)
         ),
       }
@@ -53,6 +67,7 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
       name: newName.trim(),
       joined: newJoined,
       attendance: [],
+      performances: [],
     }
     onUpdate([...members, newM])
     setNewName('')
@@ -107,7 +122,15 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
             <th className="border p-1.5 text-left bg-gray-100 sticky left-0 z-20">Mitglied</th>
             {allDates.map((d) => (
               <th key={d} className="border p-1 text-center bg-gray-100">
-                {d}
+                <div className="flex items-center justify-center gap-1">
+                  <span>{d}</span>
+                  <button
+                    onClick={() => deleteDate(d)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    🗑
+                  </button>
+                </div>
               </th>
             ))}
           </tr>
@@ -155,7 +178,7 @@ export default function AttendanceTable({ members, onUpdate, editMode }: Props) 
                       </td>
                     )
 
-                  const isPresent = m.attendance.find((a) => a.date === d)?.present
+                  const isPresent = m[key].find((a) => a.date === d)?.present
 
                   return (
                     <td

@@ -42,8 +42,13 @@ export default function ExportControls({ members, onImport, editMode }: Props) {
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result as string)
-        if (Array.isArray(data) && data.every((m) => m.id && m.name && m.attendance)) onImport(data)
-        else alert('❌ Ungültige Datenstruktur')
+        if (Array.isArray(data) && data.every((m) => m.id && m.name && m.attendance)) {
+          const formatted = data.map((m: Member) => ({
+            ...m,
+            performances: m.performances ?? [],
+          }))
+          onImport(formatted)
+        } else alert('❌ Ungültige Datenstruktur')
       } catch {
         alert('❌ Fehler beim Laden')
       }

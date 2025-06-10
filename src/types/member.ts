@@ -8,4 +8,5 @@ export interface Member {
   name: string
   joined: string // Eintrittsdatum »YYYY-MM-DD«
   attendance: AttendanceEntry[]
+  performances: AttendanceEntry[]
 }
